@@ -1,0 +1,1 @@
+from .DuckdbIS import DuckDatabase
