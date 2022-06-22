@@ -8,7 +8,7 @@ Install with pip from the wheel at the directory
 
 `pip install DuckdbIS-0.2.2-py3-none-any.whl` 
 
-### Dependancies
+### Dependencies
 
 - duckdb
 - pandas
@@ -24,6 +24,6 @@ mydb = DuckDatabase("path/file.db")
 
 ## Querying the database
 
-Whenever a query is used, (`.query()` or `.execute()`) the class will open and close a connection to the database.  This is useful as Duckdb databases can only have one symulanius connection so this functionality allows for multiple users.  If the database is in use it will attempt to open a connection three times before erroring.
+Whenever a query is used, (`.query()` or `.execute()`) the class will open and close a connection to the database.  This is useful as Duckdb databases can only have one simultaneous connection, so this functionality allows for multiple users.  If the database is in use it will attempt to open a connection three times before erroring.
 
 Select queries (using `.query()`) return a pandas dataframe for the results.  
