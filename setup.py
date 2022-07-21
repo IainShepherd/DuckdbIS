@@ -1,11 +1,14 @@
 from setuptools import setup, find_packages
 from pathlib import Path
 this_directory = Path(__file__).parent
+
 long_description = (this_directory / "README.md").read_text()
+with open((this_directory / "requirements.txt"), 'r') as f:
+    install_requires = f.read().splitlines()
 
 setup(name='DuckdbIS',
 
-      version='0.2.3',
+      version='0.2.6',
 
       description='Class for interacting with Duckdb databases',
       
@@ -21,6 +24,8 @@ setup(name='DuckdbIS',
       license='MIT',
 
       packages = find_packages(),
+      
+      install_requires = install_requires,
 
       zip_safe=False)
 

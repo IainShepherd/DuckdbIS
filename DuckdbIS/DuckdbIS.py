@@ -1,6 +1,6 @@
 '''
-v0.2.1
-Last updated: 21/06/2022
+v0.2.6
+Last updated: 21/07/2022
 Developer: Iain Shepherd
 
 Use
@@ -68,20 +68,20 @@ class DuckDatabase():
         return output
     
     @connect
-    def execute(self, query):
+    def execute(self, query: str):
         self.conn.execute(query)
         self.conn.commit()
         return self.conn.fetchall()
     
     @connect
-    def query(self, query:str):
+    def query(self, query: str):
         r"""Returns a pandas dataframe of the select query results
         query: str; SQL select query
         """
         return self.conn.query(query).to_df()
     
     @connect
-    def queryNorm(self, query:str):
+    def queryNorm(self, query: str):
         r"""Returns the duckdb default for a select query
         query: str; SQL select query
         """
@@ -119,16 +119,18 @@ class DuckDatabase():
                 print(h)
             print("\n")
             
-    def append_df(self, df: str, tbl_name: str):
+    def append_df(self, _df_: str, tbl_name: str):
         r"""Appends all the data from a dataframe to a table
 
-        df: str; the string of the dataframe object
+        _df_: str; the string of the dataframe object; note that no object can be named "_df_"
         tbl_name: str; the string of the existing table name within the database
         """
-
-        df = self.sqlprotect(df)
+        if _df_ == "_df_":
+            print("ERROR: `_df_` cannot equal '_df_")
+            raise
+        _df_ = self.sqlprotect(_df_)
         tbl_name = self.sqlprotect(tbl_name)
-        return self.execute(f"""insert into "{tbl_name}" select * from {df}""")
+        return self.execute(f"""insert into "{tbl_name}" select * from {_df_}""")
     
     def createtbl_from_df(self, df: pd.DataFrame, tblName: str):
         r"""Creates a new table in the database from a dataframe including transfering column types
@@ -138,11 +140,13 @@ class DuckDatabase():
         """
 
         tblName = self.sqlprotect(tblName)
+        tblName = self.clean_column_names(tblName)
         typelkup = {"object":"text", "float64": "float", 'int64' : 'bigint', 'bool': 'boolean'}
         q = f"Create table {tblName} ("
         for col in df.columns:
             typel=df[col].dtype.__str__()
             col = self.sqlprotect(col)
+            self.clean_column_names(col)
             q += f"{col} {typelkup.get(typel, 'text')}, "
         q = q[:-2]
         q += ")"
@@ -168,6 +172,19 @@ class DuckDatabase():
         self.query = cache_select(self.query)
         return self
 
+    def find_replace(self, inject: str, replace: str or list, replace_with: str) -> str:
+        if type(replace) is str:
+            replace = list(replace)
+        output = inject
+        for n, L in enumerate(inject):
+            if L in replace:
+                output = output[0:n] + replace_with + inject[n+1:]
+        return output
 
-
+    def find_replace_defined(self, replace, replace_with):
+        def inner(inject):
+            return self.find_replace(inject, replace, replace_with)
+        return inner
     
+    def clean_column_names(self):
+        return self.find_replace_defined([" ", "(", ")", "-"], "_")

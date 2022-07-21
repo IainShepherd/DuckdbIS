@@ -6,7 +6,11 @@ This package allows for easier transactions with Duckdb databases.  The class is
 
 Install with pip from the wheel at the directory
 
-`pip install DuckdbIS-0.2.2-py3-none-any.whl` 
+`pip install DuckdbIS-x.x.x-py3-none-any.whl` 
+
+Create new wheels with
+
+`python setup.py bdist_wheel`
 
 ### Dependancies
 
