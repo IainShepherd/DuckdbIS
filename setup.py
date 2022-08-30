@@ -8,7 +8,7 @@ with open((this_directory / "requirements.txt"), 'r') as f:
 
 setup(name='DuckdbIS',
 
-      version='0.2.6',
+      version='0.3.0',
 
       description='Class for interacting with Duckdb databases',
       

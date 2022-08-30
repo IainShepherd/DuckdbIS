@@ -1,6 +1,6 @@
 '''
-v0.2.6
-Last updated: 21/07/2022
+v0.3.0
+Last updated: 30/08/2022
 Developer: Iain Shepherd
 
 Use
@@ -19,9 +19,17 @@ class DuckDatabase():
         self.conn = None
         self.threads = 1
         self.__backup_query = self.query
+        if self.databaseloc == ":memory:":
+            self.in_memory = True
+            self.conn = duckdb.connect(self.databaseloc)
+        else:
+            self.in_memory = False
         
     def connect(method):
         def inner(self, *args, **kwargs):
+            if self.in_memory == True:
+                return method(self, *args, **kwargs)
+
             conn = self.create_conn()
             next(conn)
             try:
